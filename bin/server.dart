@@ -1,7 +1,7 @@
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
-
+import 'dart:io';
 import 'package:my_server/db/hive_db.dart';
 import 'package:my_server/routes/user_routes.dart';
 
@@ -10,8 +10,12 @@ void main() async {
 
   final app = Router();
   app.mount('/users/', UserRoutes().router);
+  final port = int.parse(Platform.environment['PORT'] ?? '8080');
+  final server = await io.serve(
+    logRequests().addHandler(app),
+    InternetAddress.anyIPv4,
+    port,
+  );
 
-  await io.serve(logRequests().addHandler(app), '0.0.0.0', 8080);
-
-  print("Server running at http://localhost:8080");
+  print("Server running at ${server.port}");
 }
