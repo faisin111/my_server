@@ -27,7 +27,7 @@ class UserRoutes {
         }).toList();
 
         return Response.ok(
-          jsonEncode(usersList.isEmpty?'no datas available':usersList),
+          jsonEncode(usersList.isEmpty?"No users available":usersList),
           headers: {'Content-Type': 'application/json'},
         );
       } catch (e, s) {
