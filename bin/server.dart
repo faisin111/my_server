@@ -9,7 +9,7 @@ void main() async {
   await HiveDB.init();
 
   final app = Router();
-  app.mount('/', UserRoutes().router);
+ app.mount('/users/', UserRoutes().router);
   app.get('/', (Request req) {
     return Response.ok(
       'Dart Server is running 🚀',
