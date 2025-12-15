@@ -12,7 +12,7 @@ void main() async {
  app.mount('/users', UserRoutes().router);
   app.get('/', (Request req) {
     return Response.ok(
-      'Dart Server is running 🚀',
+      'My Dart Server is running ',
       headers: {'Content-Type': 'text/plain'},
     );
   });
