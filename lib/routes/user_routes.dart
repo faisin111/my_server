@@ -50,7 +50,7 @@ class UserRoutes {
         await HiveDB.users.put(username, data);
 
         return Response.ok(
-          jsonEncode({"message": "User added", "id": username}),
+          jsonEncode({"message": "User added", "username": username}),
           headers: {'Content-Type': 'application/json'},
         );
       } catch (e) {
@@ -94,7 +94,7 @@ class UserRoutes {
         await HiveDB.users.put(username, updatedData);
 
         return Response.ok(
-          jsonEncode({"message": "User updated", "id": username}),
+          jsonEncode({"message": "User updated", "username": username}),
           headers: {'Content-Type': 'application/json'},
         );
       } catch (e) {
