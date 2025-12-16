@@ -116,7 +116,12 @@ class UserRoutes {
     router.delete('/<id|[0-9]+>', (Request req, String id) async{
       try {
         final cleanId = id.trim();
-
+    if (!HiveDB.users.containsKey(int.parse(cleanId))) {
+      return Response.notFound(
+        jsonEncode({"error": "User not found"}),
+        headers: {'Content-Type': 'application/json'},
+      );
+    }
        await HiveDB.users.delete(int.parse(cleanId));
 
         return Response.ok(
