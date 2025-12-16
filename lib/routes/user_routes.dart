@@ -42,13 +42,13 @@ class UserRoutes {
 
     // CREATE USER
 
-    router.post('/', (Request req) async {
+    router.post('/', (Request req,String username) async {
       try {
         final body = await req.readAsString();
         final data =await jsonDecode(body);
 
         final id = DateTime.now().millisecondsSinceEpoch;
-        await HiveDB.users.put(id, data);
+        await HiveDB.users.put(username, data);
 
         return Response.ok(
           jsonEncode({"message": "User added", "id": id}),
@@ -61,11 +61,11 @@ class UserRoutes {
 
     // GET USER BY ID (only digits)
 
-    router.get('/<id|[0-9]+>', (Request req, String id) async{
+    router.get('/<id|[0-9]+>', (Request req, String username) async{
       try {
-        final cleanId = id.trim();
+        // final cleanId = id.trim();
 
-        final user =await HiveDB.users.get(int.parse(cleanId));
+        final user =await HiveDB.users.get(username);
 
         if (user == null) {
           return Response.notFound(jsonEncode({"error": "User not found"}));
@@ -81,12 +81,12 @@ class UserRoutes {
     });
 
     // UPDATE USER
-    router.put('/<id|[0-9]+>', (Request req, String id) async {
+    router.put('/<id|[0-9]+>', (Request req, String username) async {
       try {
-        final cleanId = id.trim();
-        final userId = int.parse(cleanId);
+        // final cleanId = id.trim();
+        // final userId = int.parse(cleanId);
 
-        final existingUser = HiveDB.users.get(userId);
+        final existingUser = HiveDB.users.get(username);
         if (existingUser == null) {
           return Response.notFound(
             jsonEncode({"error": "User not found"}),
@@ -97,10 +97,10 @@ class UserRoutes {
         final body = await req.readAsString();
         final updatedData = jsonDecode(body);
 
-        await HiveDB.users.put(userId, updatedData);
+        await HiveDB.users.put(username, updatedData);
 
         return Response.ok(
-          jsonEncode({"message": "User updated", "id": userId}),
+          jsonEncode({"message": "User updated", "id": username}),
           headers: {'Content-Type': 'application/json'},
         );
       } catch (e) {
@@ -113,16 +113,16 @@ class UserRoutes {
 
     // DELETE USER
 
-    router.delete('/<id|[0-9]+>', (Request req, String id) async{
+    router.delete('/<id|[0-9]+>', (Request req, String username) async{
       try {
-        final cleanId = id.trim();
-    if (!HiveDB.users.containsKey(int.parse(cleanId))) {
+        // final cleanId = id.trim();
+    if (!HiveDB.users.containsKey(username)) {
       return Response.notFound(
         jsonEncode({"error": "User not found"}),
         headers: {'Content-Type': 'application/json'},
       );
     }
-       await HiveDB.users.delete(int.parse(cleanId));
+       await HiveDB.users.delete(username);
 
         return Response.ok(
           jsonEncode({"message": "User deleted"}),
