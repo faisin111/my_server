@@ -5,7 +5,7 @@ class HiveDB {
   static late Box users;
 
   static Future init() async {
-    final dbPath = '${Directory.current.path}/hive_data';
+    final dbPath = '${Platform.environment['HOME']}/my_server_data';
 
     Hive.init(dbPath);
 

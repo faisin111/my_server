@@ -47,7 +47,7 @@ class UserRoutes {
         final body = await req.readAsString();
         final data =await jsonDecode(body);
 
-        final id = HiveDB.users.length + 1;
+        final id = DateTime.now().millisecondsSinceEpoch;
         await HiveDB.users.put(id, data);
 
         return Response.ok(
