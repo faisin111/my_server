@@ -4,10 +4,19 @@ import 'dart:io';
 class HiveDB {
   static late Box users;
 
-  static Future init() async {
-    final dbPath = '${Platform.environment['HOME']}/my_server_data';
+  static Future<void> init() async {
+    final home =
+        Platform.environment['HOME'] ??
+        Platform.environment['USERPROFILE'] ??
+        Directory.current.path;
 
-    Hive.init(dbPath);
+    final dir = Directory('$home/my_server_data');
+
+    if (!dir.existsSync()) {
+      dir.createSync(recursive: true);
+    }
+
+    Hive.init(dir.path);
 
     users = await Hive.openBox('users');
   }

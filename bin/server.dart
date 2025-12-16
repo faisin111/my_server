@@ -9,19 +9,21 @@ void main() async {
   await HiveDB.init();
 
   final app = Router();
- app.mount('/users', UserRoutes().router);
+
+  app.mount('/users', UserRoutes().router);
+
   app.get('/', (Request req) {
     return Response.ok(
-      'My Dart Server is running ',
+      'My Dart Server is running',
       headers: {'Content-Type': 'text/plain'},
     );
   });
-  final port = int.parse(Platform.environment['PORT'] ?? '8080');
-  final server = await io.serve(
-    logRequests().addHandler(app),
-    InternetAddress.anyIPv4,
-    port,
-  );
 
-  print("Server running at ${server.port}");
+  final port = int.parse(Platform.environment['PORT'] ?? '8080');
+
+  final handler = Pipeline().addMiddleware(logRequests()).addHandler(app);
+
+  final server = await io.serve(handler, InternetAddress.anyIPv4, port);
+
+  print('Server running at http://localhost:${server.port}');
 }

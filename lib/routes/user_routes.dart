@@ -18,11 +18,9 @@ class UserRoutes {
           );
         }
 
-        final usersList = await HiveDB.users.values.map((user) {
+        final usersList = HiveDB.users.values.map((user) {
           if (user is Map) return user;
-          if (user.toJson != null) {
-            return user.toJson();
-          }
+
           return {"value": user.toString()};
         }).toList();
 
@@ -45,7 +43,23 @@ class UserRoutes {
     router.post('/<username>', (Request req, String username) async {
       try {
         final body = await req.readAsString();
-        final data = await jsonDecode(body);
+
+        if (body.isEmpty) {
+          return Response.badRequest(
+            body: jsonEncode({"error": "Request body is empty"}),
+            headers: {'Content-Type': 'application/json'},
+          );
+        }
+
+        dynamic data;
+        try {
+          data = jsonDecode(body);
+        } catch (_) {
+          return Response.badRequest(
+            body: jsonEncode({"error": "Invalid JSON format"}),
+            headers: {'Content-Type': 'application/json'},
+          );
+        }
 
         await HiveDB.users.put(username, data);
 
@@ -54,7 +68,10 @@ class UserRoutes {
           headers: {'Content-Type': 'application/json'},
         );
       } catch (e) {
-        return Response.internalServerError(body: "POST Error: $e");
+        return Response.internalServerError(
+          body: jsonEncode({"error": "POST Error: $e"}),
+          headers: {'Content-Type': 'application/json'},
+        );
       }
     });
 
@@ -65,7 +82,10 @@ class UserRoutes {
         final user = await HiveDB.users.get(username);
 
         if (user == null) {
-          return Response.notFound(jsonEncode({"error": "User not found"}));
+          return Response.notFound(
+            jsonEncode({"error": "User not found"}),
+            headers: {'Content-Type': 'application/json'},
+          );
         }
 
         return Response.ok(
