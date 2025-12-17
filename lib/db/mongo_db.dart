@@ -7,13 +7,13 @@ class MongoDb {
   static late DbCollection users;
 
   static Future<void> init() async {
-    final mongoUrl = Platform.environment['MONGO_URL'];
+    // final mongoUrl = Platform.environment['MONGO_URL'];
 
-    if (mongoUrl == null || mongoUrl.isEmpty) {
-      throw Exception('MONGO_URL is not set');
-    }
+    // if (mongoUrl == null || mongoUrl.isEmpty) {
+    //   throw Exception('MONGO_URL is not set');
+    // }
 
-    db = Db(mongoUrl);
+    db = Db("mongodb+srv://admin:CLzyys6WZqXHvI1J@cluster0.1misyhm.mongodb.net/mydb?retryWrites=true&w=majority");
     await db.open();
     users = db.collection('users');
     print('Mongo DB created');
