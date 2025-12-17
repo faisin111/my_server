@@ -8,4 +8,4 @@ services:
       - "8080:8080"
     environment:
       - PORT=8080
-      - mongodb+srv://<admin>:<CLzyys6WZqXHvI1J>@cluster0.1misyhm.mongodb.net/?appName=Cluster0
+      - MONGO_URL=mongodb+srv://admin:CLzyys6WZqXHvI1J@cluster0.1misyhm.mongodb.net/mydb?retryWrites=true&w=majority

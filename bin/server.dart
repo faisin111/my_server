@@ -11,6 +11,7 @@ void main() async {
   }
   catch(e){
     print('server connection failed $e');
+    exit(1);
   }
 
   final app = Router();

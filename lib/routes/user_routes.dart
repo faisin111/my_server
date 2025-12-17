@@ -4,6 +4,14 @@ import 'package:my_server/db/mongo_db.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
+ObjectId? safeObjectId(String id) {
+  try {
+    return ObjectId.parse(id);
+  } catch (_) {
+    return null;
+  }
+}
+
 class UserRoutes {
   Router get router {
     final router = Router();
@@ -33,9 +41,13 @@ class UserRoutes {
 
     // GET USER BY ID
     router.get('/<id>', (Request req, String id) async {
-      if (!ObjectId.isValidHexId(id)) {
+         final objectId = safeObjectId(id);
+
+      if (objectId == null) {
         return Response.badRequest(
-            body: jsonEncode({"error": "Invalid id"}));
+          body: jsonEncode({"error": "Invalid id"}),
+          headers: {'Content-Type': 'application/json'},
+        );
       }
 
       final user =
@@ -52,11 +64,14 @@ class UserRoutes {
 
     // UPDATE USER
     router.put('/<id>', (Request req, String id) async {
-      if (!ObjectId.isValidHexId(id)) {
-        return Response.badRequest(
-            body: jsonEncode({"error": "Invalid id"}));
-      }
+       final objectId = safeObjectId(id);
 
+      if (objectId == null) {
+        return Response.badRequest(
+          body: jsonEncode({"error": "Invalid id"}),
+          headers: {'Content-Type': 'application/json'},
+        );
+      }
       final body = await req.readAsString();
       final updatedData = jsonDecode(body) as Map<String, dynamic>;
       updatedData.remove('_id');
@@ -73,11 +88,14 @@ class UserRoutes {
 
     // DELETE USER
     router.delete('/<id>', (Request req, String id) async {
-      if (!ObjectId.isValidHexId(id)) {
-        return Response.badRequest(
-            body: jsonEncode({"error": "Invalid id"}));
-      }
+        final objectId = safeObjectId(id);
 
+      if (objectId == null) {
+        return Response.badRequest(
+          body: jsonEncode({"error": "Invalid id"}),
+          headers: {'Content-Type': 'application/json'},
+        );
+      }
       await MongoDb.users.deleteOne(
           where.id(ObjectId.parse(id)));
 
