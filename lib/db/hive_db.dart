@@ -5,8 +5,9 @@ class HiveDB {
   static late Box users;
 
   static Future<void> init() async {
-    final baseDir = Directory.current.path;
-    final dir = Directory('$baseDir/my_server_data');
+    final dir = Directory(
+      '${Platform.script.toFilePath()}/../hive_data',
+    ).absolute;
 
     if (!dir.existsSync()) {
       dir.createSync(recursive: true);
