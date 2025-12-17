@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  dart-server:
+    build: .
+    container_name: my_server
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./my_server_data:/app/data
