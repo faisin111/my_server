@@ -6,5 +6,6 @@ services:
     container_name: my_server
     ports:
       - "8080:8080"
-    volumes:
-      - ./hive_data:/app/hive_data
+    environment:
+      - PORT=8080
+      - mongodb+srv://<admin>:<CLzyys6WZqXHvI1J>@cluster0.1misyhm.mongodb.net/?appName=Cluster0

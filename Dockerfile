@@ -1,23 +1,21 @@
-# Use official Dart image
-FROM dart:stable
+# -------- Build Stage --------
+FROM dart:stable AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy pubspec files
 COPY pubspec.* ./
-
-# Get dependencies
 RUN dart pub get
 
-# Copy all source code
 COPY . .
-
-# Compile Dart server to executable
 RUN dart compile exe bin/server.dart -o server
 
-# Expose port (Render uses dynamic PORT)
+# -------- Runtime Stage --------
+FROM debian:bullseye-slim
+
+WORKDIR /app
+
+COPY --from=build /app/server /app/server
+
 EXPOSE 8080
 
-# Start server
 CMD ["./server"]

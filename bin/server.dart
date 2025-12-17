@@ -2,11 +2,16 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
 import 'dart:io';
-import 'package:my_server/db/hive_db.dart';
+import 'package:my_server/db/mongo_db.dart';
 import 'package:my_server/routes/user_routes.dart';
 
 void main() async {
-  await HiveDB.init();
+  try{
+  await MongoDb.init();
+  }
+  catch(e){
+    print('server connection failed $e');
+  }
 
   final app = Router();
 
