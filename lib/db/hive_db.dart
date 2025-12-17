@@ -13,7 +13,6 @@ class HiveDB {
 
     Hive.init(dir.path);
     users = await Hive.openBox('users');
-     users.clear();
     print('Hive DB path: ${dir.absolute.path}');
   }
 }
