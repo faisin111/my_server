@@ -6,7 +6,7 @@ class HiveDB {
 
   static Future<void> init() async {
     final dir = Directory(
-      '${Platform.script.toFilePath()}/../hive_data',
+      '${Platform.script.toFilePath()}/app/data/hive',
     ).absolute;
 
     if (!dir.existsSync()) {
