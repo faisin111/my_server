@@ -5,7 +5,7 @@ class HiveDB {
   static late Box users;
 
   static Future<void> init() async {
-   final dir = Directory('/app/data/hive');
+   final dir = Directory('/app/hive_data');
 
     if (!dir.existsSync()) {
       dir.createSync(recursive: true);
