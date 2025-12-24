@@ -9,7 +9,7 @@ RUN dart pub get
 COPY . .
 RUN dart compile exe bin/server.dart -o server
 
-# -------- Runtime Stage --------
+# -------- Runtime Stage -------
 FROM debian:bullseye-slim
 
 WORKDIR /app
