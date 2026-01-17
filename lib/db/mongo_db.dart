@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:mongo_dart/mongo_dart.dart';
 
 class MongoDb {
@@ -12,8 +10,10 @@ class MongoDb {
     // if (mongoUrl == null || mongoUrl.isEmpty) {
     //   throw Exception('MONGO_URL is not set');
     // }
-
-    db = Db("mongodb+srv://admin:CLzyys6WZqXHvI1J@cluster0.1misyhm.mongodb.net/mydb?retryWrites=true&w=majority");
+    //  dbb=Db("mongodb+srv://faisin123:CLzyys6WZqXHvI1J@cluster0.h2wjcex.mongodb.net/?dartServer=Cluster0")
+    db = Db(
+      "mongodb+srv://faisin123:CLzyys6WZqXHvI1J@cluster0.h2wjcex.mongodb.net/?dartServer=Cluster0",
+    );
     await db.open();
     users = db.collection('users');
     print('Mongo DB created');
