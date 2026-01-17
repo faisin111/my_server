@@ -6,13 +6,16 @@ class HiveDb {
   static late Box usersBox;
 
   static Future<void> init() async {
-    // Set Hive directory (important for server)
-    final dir = Directory.current.path;
-    Hive.init(dir);
+    final dir = Directory('/tmp/hive');
 
-    // Open box (similar to MongoDB collection)
+    if (!dir.existsSync()) {
+      dir.createSync(recursive: true);
+    }
+
+    Hive.init(dir.path);
+
     usersBox = await Hive.openBox('users');
 
-    print('Hive DB initialized');
+    print('Hive DB initialized at ${dir.path}');
   }
 }
