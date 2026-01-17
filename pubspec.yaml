@@ -8,7 +8,7 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
-  mongo_dart: ^0.10.5
+  hive: ^2.2.3
   path: ^1.9.0
   shelf: ^1.4.2
   shelf_router: ^1.1.4

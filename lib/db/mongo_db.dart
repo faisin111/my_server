@@ -1,24 +1,18 @@
 import 'dart:io';
 
-import 'package:mongo_dart/mongo_dart.dart';
+import 'package:hive/hive.dart';
 
-class MongoDb {
-  static late Db db;
-  static late DbCollection users;
+class HiveDb {
+  static late Box usersBox;
 
   static Future<void> init() async {
-    final mongoUrl = Platform.environment['MONGO_URL'];
+    // Set Hive directory (important for server)
+    final dir = Directory.current.path;
+    Hive.init(dir);
 
-    if (mongoUrl == null || mongoUrl.isEmpty) {
-      throw Exception('MONGO_URL is not set');
-    }
-    //  dbb=Db("mongodb+srv://faisin123:CLzyys6WZqXHvI1J@cluster0.h2wjcex.mongodb.net/?dartServer=Cluster0")
-    // db = Db(
-    //   "mongodb+srv://faisin123:CLzyys6WZqXHvI1J@cluster0.h2wjcex.mongodb.net/?dartServer=Cluster0",
-    // );
-    db = Db(mongoUrl);
-    await db.open();
-    users = db.collection('users');
-    print('Mongo DB created');
+    // Open box (similar to MongoDB collection)
+    usersBox = await Hive.openBox('users');
+
+    print('Hive DB initialized');
   }
 }
