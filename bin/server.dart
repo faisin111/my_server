@@ -9,7 +9,13 @@ import 'package:shelf_router/shelf_router.dart';
 import 'package:my_server/routes/user_routes.dart';
 
 Future<void> main() async {
-  final env=DotEnv()..load();
+  final env=DotEnv();
+   if (File('.env').existsSync()) {
+    env.load();
+    print('.env loaded');
+  } else {
+    print('No .env file found, using platform environment');
+  }
   try {
     await PostgresDb.init(env);
   } catch (e) {
