@@ -1,15 +1,8 @@
 import 'dart:convert';
-import 'package:my_server/db/hive_db.dart';
+import 'package:my_server/db/postgres_db.dart';
+import 'package:postgres/postgres.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
-
-int? safeHiveId(String id) {
-  try {
-    return int.parse(id);
-  } catch (_) {
-    return null;
-  }
-}
 
 class UserRoutes {
   Router get router {
@@ -17,11 +10,13 @@ class UserRoutes {
 
     // GET ALL USERS
     router.get('/', (Request req) async {
-      final users = HiveDb.usersBox.values.toList().asMap().entries.map((e) {
-        final user = Map<String, dynamic>.from(e.value);
-        user['id'] = e.key;
-        return user;
-      }).toList();
+      final result = await PostgresDb.connection.execute(
+        Sql.named('SELECT id, name, email FROM users'),
+      );
+
+      final users = result
+          .map((row) => {"id": row[0], "name": row[1], "email": row[2]})
+          .toList();
 
       return Response.ok(
         jsonEncode(users),
@@ -32,29 +27,42 @@ class UserRoutes {
     // CREATE USER
     router.post('/', (Request req) async {
       final body = await req.readAsString();
-      final data = jsonDecode(body) as Map<String, dynamic>;
+      final data = jsonDecode(body);
 
-      final id = await HiveDb.usersBox.add(data);
+      final result = await PostgresDb.connection.execute(
+        Sql.named('''
+          INSERT INTO users (name, email)
+          VALUES (@name, @email)
+          RETURNING id
+        '''),
+        parameters: {'name': data['name'], 'email': data['email']},
+      );
 
       return Response.ok(
-        jsonEncode({"message": "User added", "id": id}),
+        jsonEncode({"message": "User added", "id": result.first[0]}),
         headers: {'Content-Type': 'application/json'},
       );
     });
 
     // GET USER BY ID
     router.get('/<id>', (Request req, String id) async {
-      final index = safeHiveId(id);
+      final result = await PostgresDb.connection.execute(
+        Sql.named('SELECT id, name, email FROM users WHERE id = @id'),
+        parameters: {'id': int.parse(id)},
+      );
 
-      if (index == null || !HiveDb.usersBox.containsKey(index)) {
+      if (result.isEmpty) {
         return Response.notFound(
           jsonEncode({"error": "User not found"}),
           headers: {'Content-Type': 'application/json'},
         );
       }
 
-      final user = Map<String, dynamic>.from(HiveDb.usersBox.getAt(index));
-      user['id'] = index;
+      final user = {
+        "id": result.first[0],
+        "name": result.first[1],
+        "email": result.first[2],
+      };
 
       return Response.ok(
         jsonEncode(user),
@@ -64,19 +72,21 @@ class UserRoutes {
 
     // UPDATE USER
     router.put('/<id>', (Request req, String id) async {
-      final index = safeHiveId(id);
-
-      if (index == null || !HiveDb.usersBox.containsKey(index)) {
-        return Response.badRequest(
-          body: jsonEncode({"error": "Invalid id"}),
-          headers: {'Content-Type': 'application/json'},
-        );
-      }
-
       final body = await req.readAsString();
-      final updatedData = jsonDecode(body) as Map<String, dynamic>;
+      final data = jsonDecode(body);
 
-      await HiveDb.usersBox.putAt(index, updatedData);
+      await PostgresDb.connection.execute(
+        Sql.named('''
+          UPDATE users
+          SET name = @name, email = @email
+          WHERE id = @id
+        '''),
+        parameters: {
+          'id': int.parse(id),
+          'name': data['name'],
+          'email': data['email'],
+        },
+      );
 
       return Response.ok(
         jsonEncode({"message": "User updated"}),
@@ -86,16 +96,10 @@ class UserRoutes {
 
     // DELETE USER
     router.delete('/<id>', (Request req, String id) async {
-      final index = safeHiveId(id);
-
-      if (index == null || !HiveDb.usersBox.containsKey(index)) {
-        return Response.badRequest(
-          body: jsonEncode({"error": "Invalid id"}),
-          headers: {'Content-Type': 'application/json'},
-        );
-      }
-
-      await HiveDb.usersBox.deleteAt(index);
+      await PostgresDb.connection.execute(
+        Sql.named('DELETE FROM users WHERE id = @id'),
+        parameters: {'id': int.parse(id)},
+      );
 
       return Response.ok(
         jsonEncode({"message": "User deleted"}),

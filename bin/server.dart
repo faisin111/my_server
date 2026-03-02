@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:my_server/db/hive_db.dart';
+import 'package:my_server/db/postgres_db.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
@@ -9,10 +9,9 @@ import 'package:my_server/routes/user_routes.dart';
 
 Future<void> main() async {
   try {
-    // 🔥 Initialize Hive (REQUIRED)
-    await HiveDb.init();
+    await PostgresDb.init();
   } catch (e) {
-    print('Hive initialization failed: $e');
+    print('Postgres initialization failed: $e');
     exit(1);
   }
 
