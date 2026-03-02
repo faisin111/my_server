@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dotenv/dotenv.dart';
 import 'package:my_server/db/postgres_db.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
@@ -8,8 +9,9 @@ import 'package:shelf_router/shelf_router.dart';
 import 'package:my_server/routes/user_routes.dart';
 
 Future<void> main() async {
+  final env=DotEnv()..load();
   try {
-    await PostgresDb.init();
+    await PostgresDb.init(env);
   } catch (e) {
     print('Postgres initialization failed: $e');
     exit(1);

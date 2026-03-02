@@ -10,6 +10,7 @@ environment:
 dependencies:
 
 
+  dotenv: ^4.2.0
   postgres: ^3.5.9
   shelf: ^1.4.2
   shelf_router: ^1.1.4

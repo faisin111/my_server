@@ -1,18 +1,19 @@
 import 'dart:io';
 
+import 'package:dotenv/dotenv.dart';
 import 'package:postgres/postgres.dart';
 
 class PostgresDb {
   static late Connection connection;
 
-  static Future<void> init() async {
+  static Future<void> init(DotEnv env) async {
     connection = await Connection.open(
       Endpoint(
-        host: Platform.environment['DB_HOST']!,
-        port: int.parse(Platform.environment['DB_PORT']!),
-        database: Platform.environment['DB_NAME']!,
-        username: Platform.environment['DB_USER']!,
-        password: Platform.environment['DB_PASS']!,
+       host: env['DB_HOST']!,
+        port: int.parse(env['DB_PORT']!),
+        database: env['DB_NAME']!,
+        username: env['DB_USER']!,
+        password: env['DB_PASS']!,
       ),
       settings: const ConnectionSettings(sslMode: SslMode.disable),
     );
