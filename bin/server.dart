@@ -9,8 +9,13 @@ import 'package:shelf_router/shelf_router.dart';
 import 'package:my_server/routes/user_routes.dart';
 
 Future<void> main() async {
-  final env=DotEnv();
-   if (File('.env').existsSync()) {
+  final corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Origin, Content-Type',
+  };
+  final env = DotEnv();
+  if (File('.env').existsSync()) {
     env.load();
     print('.env loaded');
   } else {
@@ -34,10 +39,25 @@ Future<void> main() async {
       headers: {'Content-Type': 'text/plain'},
     );
   });
+  Middleware corsMiddleware() {
+    return (Handler innerHandler) {
+      return (Request request) async {
+        if (request.method == 'OPTIONS') {
+          return Response.ok('', headers: corsHeaders);
+        }
+
+        final response = await innerHandler(request);
+        return response.change(headers: corsHeaders);
+      };
+    };
+  }
 
   final port = int.parse(Platform.environment['PORT'] ?? '8080');
 
-  final handler = Pipeline().addMiddleware(logRequests()).addHandler(app);
+  final handler = Pipeline()
+      .addMiddleware(logRequests())
+      .addMiddleware(corsMiddleware())
+      .addHandler(app);
 
   final server = await io.serve(handler, InternetAddress.anyIPv4, port);
 
